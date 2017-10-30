@@ -1,0 +1,34 @@
+#homePage {
+  background: linear-gradient(140deg, #6bd8e2 0%, #67e5cb 51%, #51d1c0 75%);
+  width: 100%;
+  padding: 0px;
+  overflow: hidden;
+  margin-top: 50px;
+  height: 100%;
+}
+
+.uploader {
+  margin: 10px;
+}
+
+#fileInput {
+  margin-bottom:5px;
+}
+
+#uploadButton {
+  margin-bottom:10px;
+}
+
+.loader {
+  border: 8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
