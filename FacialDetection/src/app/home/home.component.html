@@ -1,6 +1,6 @@
 <div class="container" id="homePage">
   <div class="uploader">
-    <input id="fileInput" type="file" accept="video/*">
+    <input id="fileInput" type="file" accept="video/mp4">
     <button id="uploadButton" class="btn btn-primary" (click)="startProcessing()">Start Processing</button>
     <div class="loader" *ngIf="loading"></div>
     <video autoplay controls></video>
