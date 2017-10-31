@@ -19,7 +19,7 @@ export class HomeComponent implements OnInit {
   private task;
   private database;
   private selected;
-  private numberOfFrames;
+  private done = false;
   private loading = false;
 
   constructor(private authGuardService: AuthGuardService,
@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit {
   }
 
   startProcessing() {
-    this.numberOfFrames = null;
+    this.done = false;
     this.loading = true;
     const file = ($('input[type=file]')[0] as HTMLInputElement).files[0];
     if (file) {
@@ -65,8 +65,9 @@ export class HomeComponent implements OnInit {
     this.http.get('http://localhost:8888/FacialRecognition/FacialDetection/', {params: {fileInfo: file}})
       .subscribe(res => {
         console.log(res);
-        this.numberOfFrames = res.text();
+        this.done = true;
         this.loading = false;
+        document.querySelector("video").src="http://localhost:8888/FacialRecognition/FacialDetection/video_out/" + file;
       });
   }
 

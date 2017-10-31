@@ -3,6 +3,6 @@
     <input id="fileInput" type="file" accept="video/*">
     <button id="uploadButton" class="btn btn-primary" (click)="startProcessing()">Start Processing</button>
     <div class="loader" *ngIf="loading"></div>
-    <p *ngIf="numberOfFrames">There are {{numberOfFrames}} frames in this video.</p>
+    <video autoplay controls></video>
   </div>
 </div>

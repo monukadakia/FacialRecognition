@@ -28,7 +28,8 @@
     $count = $count + 1;
   }
 
-  $command = "/usr/local/bin/ffmpeg -r 30 -f image2 -s 1920x1080 -i /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/image-%d.png -vcodec libx264 -crf 25  -pix_fmt yuv420p /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/test.mov";
+  $filePath = $_GET["fileInfo"];
+  $command = "/usr/local/bin/ffmpeg -r 30 -f image2 -s 1920x1080 -i /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/image-%d.png -vcodec libx264 -crf 25 /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/".$filePath;
   shell_exec($command);
   	
     
