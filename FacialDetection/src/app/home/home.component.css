@@ -2,8 +2,8 @@
   background: linear-gradient(140deg, #6bd8e2 0%, #67e5cb 51%, #51d1c0 75%);
   width: 100%;
   padding: 0px;
-  overflow: hidden;
-  margin-top: 50px;
+  overflow: scroll;
+  margin: 50px 0px;
   height: 100%;
 }
 
@@ -31,4 +31,41 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.file {
+  width: 100%;
+  padding: 8px 5px;
+  margin: 5px auto;
+  background-color: whitesmoke;
+  font-size: 16pt;
+  font-weight: 100;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.file:hover {
+  background-color: seagreen;
+  color:white;
+}
+
+.selected {
+  background-color: lightseagreen;
+  color: whitesmoke;
+}
+
+.filesList {
+  width: 25%;
+  display: inline-block;
+  float: right;
+  border-radius: 5px;
+}
+
+video {
+  display: inline;
+  width: 74%;
+  height: 500px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #00000063;
 }

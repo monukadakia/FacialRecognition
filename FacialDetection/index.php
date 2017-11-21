@@ -3,6 +3,11 @@
  	header("Access-Control-Allow-Origin: *");
 
  	$filePath = $_GET["fileInfo"];
+  $userID = $_GET["userId"];
+  if (!file_exists('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/'.$userID)) {
+    mkdir('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/'.$userID, 0777, true);
+  }
+
  	if (!file_exists('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_in/')) {
  	  mkdir('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_in/', 0777, true);
  	}
@@ -29,16 +34,10 @@
   }
 
   $filePath = $_GET["fileInfo"];
-  $command = "/usr/local/bin/ffmpeg -r 30 -f image2 -s 1920x1080 -i /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/image-%d.png -vcodec libx264 -crf 25 /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/".$filePath;
+  $command = "/usr/local/bin/ffmpeg -r 30 -f image2 -s 1920x1080 -i /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/image-%d.png -vcodec libx264 -crf 25 /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/".$userID."/".$filePath;
   shell_exec($command);
-  	
-    
 
-  	// $img_count = explode("END\n", $out);
-  	// for($x = 0; $x < $img_count; $x++)
-  	// {
-  	// 	echo $img_count[$x];
-  	// 	// $command = '/Users/mohnishkadakia/Library/Enthought/Canopy_64bit/User/bin/python /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/sample.py "'.$img_count[$x].'"';
-  	// 	// echo shell_exec($command);
-  	// }		
+  $command = "rm /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/*.png";
+  shell_exec($command);
+  		
   ?>

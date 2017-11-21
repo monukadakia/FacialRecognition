@@ -3,6 +3,14 @@
     <input id="fileInput" type="file" accept="video/mp4">
     <button id="uploadButton" class="btn btn-primary" (click)="startProcessing()">Start Processing</button>
     <div class="loader" *ngIf="loading"></div>
+    <br>
+    <div class="filesList">
+    	<ul class="list-unstyled fileList">
+	    	<li class="file" *ngFor="let file of files" (click)="playFile(file)">
+	    		{{file.name}}
+	    	</li>
+		</ul>
+    </div>
     <video autoplay controls></video>
   </div>
 </div>
