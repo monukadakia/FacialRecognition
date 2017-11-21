@@ -4,6 +4,7 @@
 
  	$filePath = $_GET["fileInfo"];
   $userID = $_GET["userId"];
+
   if (!file_exists('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/'.$userID)) {
     mkdir('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/'.$userID, 0777, true);
   }
@@ -39,5 +40,20 @@
 
   $command = "rm /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/*.png";
   shell_exec($command);
+
+$command = "/usr/local/bin/ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 " .$filePath. " 2>&1";
+$numOfFrames = intval(shell_exec($command));
+
+$command = "/usr/local/bin/ffprobe -v error -select_streams v:0 -show_entries stream=avg_frame_rate -of default=noprint_wrappers=1:nokey=1 " .$filePath. " 2>&1";
+$framePerSecond = explode("/",shell_exec($command));
+
+$command = "/usr/local/bin/ffprobe -v error -of flat=s=_ -select_streams v:0 -show_entries stream=height,width " .$filePath. " 2>&1";
+$resolution = explode("\n", shell_exec($command));
+
+echo $numOfFrames. "\n";
+echo $framePerSecond[0]. "\n";
+foreach ($resolution as $elem) {
+  echo substr($elem, strpos($elem, '=')+1). "\n";
+}
   		
   ?>

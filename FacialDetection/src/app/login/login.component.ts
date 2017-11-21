@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {AuthGuardService} from '../../services/auth-guard.service';
 import {Router} from '@angular/router';
 import {HeaderComponent} from '../../shared/header/header.component';
+import {FirebaseApp} from 'angularfire2';
 
 @Component({
   selector: 'app-login',
@@ -12,7 +13,10 @@ export class LoginComponent implements OnInit {
 
   constructor(private authGuardService: AuthGuardService,
               private router: Router,
-              private header: HeaderComponent) { }
+              private header: HeaderComponent,
+              private firebaseApp: FirebaseApp) { 
+      this.database = firebaseApp.database();
+  }
 
   reset = false;
   error = false;
@@ -21,6 +25,7 @@ export class LoginComponent implements OnInit {
   invalidEmail = false;
   emptyPwd = false;
   invalidAuth = false;
+  database;
 
 
   ngOnInit() {
@@ -57,11 +62,27 @@ export class LoginComponent implements OnInit {
       return;
     }
     this.authGuardService.login(email, password).then(a => {
-      this.router.navigate(['/home']);
+      this.authGuardService.afDB.list("/users/" + a.uid).subscribe(a2 =>{
+        a2.forEach (b => {
+          let keys = Object.keys(b);
+          keys.forEach(key => {
+            if (key === "info") {
+              b[key].lastLoginOn = new Date().toLocaleString();
+              let self = this;
+              $.getJSON("http://jsonip.com/?callback=?", function (data) {
+                b[key].ipAddress = data.ip;
+                self.database.ref('/users/' + a.uid + '/' + b.$key).update({info: b[key]});
+                self.router.navigate(['/home']);
+              });
+            }
+          });
+        });
+      });
     }).catch(a => {
       this.invalidAuth = true;
     });
   }
+
 
   resetPwd() {
     this.reset = true;

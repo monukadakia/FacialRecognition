@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit {
             let keys = Object.keys(b);
             keys.forEach(key => {
               if (key === "info") {
-                this.headerComponent.updateUsername(b[key].name);
+                this.headerComponent.updateUsername(b[key].firstName + " " + b[key].lastName);
               }
               if (b.$key === "files") {
                 let fileDb = b[key];
@@ -84,8 +84,8 @@ export class HomeComponent implements OnInit {
   getData(file) {
     this.http.get('http://localhost:8888/FacialRecognition/FacialDetection/', {params: {fileInfo: file, userId: this.userId}})
       .subscribe(res => {
-        console.log(res);
-        this.updateDatabase(file);
+        console.log(res.text());
+        // this.updateDatabase(file);
       });
   }
 

@@ -14,9 +14,6 @@ export class SignupComponent implements OnInit {
 
   ngOnInit() {
     $('.text-danger').hide();
-    $('#name').on('keydown', function() {
-      $('.text-danger').hide();
-    });
     $('#email').on('keydown', function() {
       $('.text-danger').hide();
     });
@@ -34,14 +31,11 @@ export class SignupComponent implements OnInit {
   }
 
   signup() {
-    const userName = $('#name').val().toString().trim();
+    const firstName = $('#first-name').val().toString().trim();
+    const lastName = $('#last-name').val().toString().trim();
     const email = $('#email').val().toString().trim();
     const password = $('#pwd').val().toString().trim();
     const confirmPwd = $('#confirmPwd').val().toString().trim();
-    if (userName.length < 1) {
-      $('#emptyName').show();
-      return;
-    }
     if (email.length < 1){
       $('#emptyEmail').show();
       return;
@@ -66,15 +60,18 @@ export class SignupComponent implements OnInit {
       $('#invalidConfirmPwd').show();
       return;
     }
-    this.authGuardService.signup(email, password).then(a => {
-      this.authGuardService.afDB.list('/users/' + a.uid).
-      push({info: {name: userName, dateCreated: new Date().toLocaleString()}});
-      this.authGuardService.login(email, password).then(a2 => {
-        this.router.navigate(['/home']);
+    let self = this;
+    $.getJSON("http://jsonip.com/?callback=?", function (data) {
+      self.authGuardService.signup(email, password).then(a => {
+        self.authGuardService.afDB.list('/users/' + a.uid).
+        push({info: {firstName: firstName, lastName: lastName, ipAddress: data.ip, lastLoginOn: new Date().toLocaleString()}});
+        self.authGuardService.login(email, password).then(a2 => {
+          self.router.navigate(['/home']);
+        });
+      }).catch(a => {
+        $('#duplicateEmail').show();
       });
-    }).catch(a => {
-      $('#duplicateEmail').show();
-    });
+    });
   }
 
   isValidEmail(email) {
