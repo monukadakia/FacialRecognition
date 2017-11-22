@@ -85,7 +85,7 @@ export class HomeComponent implements OnInit {
     this.http.get('http://localhost:8888/FacialRecognition/FacialDetection/', {params: {fileInfo: file, userId: this.userId}})
       .subscribe(res => {
         console.log(res.text());
-        // this.updateDatabase(file);
+         this.updateDatabase(file);
       });
   }
 

@@ -1,26 +1,25 @@
 <?php
+  header("Access-Control-Allow-Origin: *");
 
- 	header("Access-Control-Allow-Origin: *");
-
- 	$filePath = $_GET["fileInfo"];
+  $filePath = $_GET["fileInfo"];
   $userID = $_GET["userId"];
 
   if (!file_exists('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/'.$userID)) {
     mkdir('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/'.$userID, 0777, true);
   }
 
- 	if (!file_exists('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_in/')) {
- 	  mkdir('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_in/', 0777, true);
- 	}
- 	$filePath = '/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_in/'.$filePath;
+  if (!file_exists('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_in/')) {
+    mkdir('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_in/', 0777, true);
+  }
+  $filePath = '/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_in/'.$filePath;
 
- 	$command = '/usr/local/bin/ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 '.$filePath;
- 	exec($command, $output, $return_var);
- 	if (!file_exists('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/')) {
- 	  mkdir('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/', 0777, true);
- 	}
+  $command = '/usr/local/bin/ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 '.$filePath;
+  exec($command, $output, $return_var);
+  if (!file_exists('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/')) {
+    mkdir('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/', 0777, true);
+  }
 
- 	$command = '/usr/local/bin/ffmpeg  -i '.$filePath.' -vf fps=30 /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/image-%d.png';
+  $command = '/usr/local/bin/ffmpeg  -i '.$filePath.' -vf fps=30 /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/image-%d.png';
   shell_exec($command);
 
   $count = 1;
@@ -41,6 +40,8 @@
   $command = "rm /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/*.png";
   shell_exec($command);
 
+$filePath = '/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_in/'.$filePath;
+
 $command = "/usr/local/bin/ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 " .$filePath. " 2>&1";
 $numOfFrames = intval(shell_exec($command));
 
@@ -55,5 +56,5 @@ echo $framePerSecond[0]. "\n";
 foreach ($resolution as $elem) {
   echo substr($elem, strpos($elem, '=')+1). "\n";
 }
-  		
+      
   ?>
