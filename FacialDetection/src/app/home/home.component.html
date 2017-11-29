@@ -1,13 +1,13 @@
 <div class="container" id="homePage">
   <div class="uploader">
-    <input id="fileInput" type="file" accept="video/mp4">
+    <input id="fileInput" type="file" accept="video/*">
     <button id="uploadButton" class="btn btn-primary" (click)="startProcessing()">Start Processing</button>
     <div class="loader" *ngIf="loading"></div>
     <br>
     <div class="filesList">
     	<ul class="list-unstyled fileList">
 	    	<li class="file" *ngFor="let file of files" (click)="playFile(file)">
-	    		{{file.name}}
+	    		{{file.id}}
 	    	</li>
 		</ul>
     </div>

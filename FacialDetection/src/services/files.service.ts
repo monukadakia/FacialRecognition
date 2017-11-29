@@ -1,7 +1,5 @@
-import {Observable} from "rxjs/Observable";
 import {AngularFireDatabase, FirebaseListObservable} from "angularfire2/database";
 import {AngularFireAuth} from "angularfire2/auth";
-import * as firebase from "firebase/app";
 import { Injectable } from '@angular/core';
 import { FirebaseApp } from "angularfire2";
 
@@ -27,10 +25,10 @@ export class FilesService {
   updateFile(file) {
     let secretKey;
     this.afDB.list("/users/" + this.userId + "/files/" + file.id).subscribe(a => {
-      let keys = Object.keys(a);
+      const keys = Object.keys(a);
       secretKey = a[keys[0]].$key;
     });
-    let db = this.database.ref("/users/" + this.userId + "/files/" + file.id + "/" + secretKey);
+    const db = this.database.ref("/users/" + this.userId + "/files/" + file.id + "/" + secretKey);
     return db.update(file);
   }
 
@@ -39,8 +37,8 @@ export class FilesService {
   }
 
   removeFile(file) {
-    let ref = this.storage.ref();
-    let fileName = file.filename.replace(".mp4", "");
+    const ref = this.storage.ref();
+    const fileName = file.filename.replace(".mp4", "");
     return ref.child(this.userId + "/" + fileName).delete();
   }
 
@@ -55,8 +53,13 @@ export class FDFile {
   public outputLink;
   public name;
   public filename;
+  public frames;
+  public fps;
+  public width;
+  public height;
+  public points;
 
-  constructor(){
+  constructor() {
   }
 
   public deserialize(json) {
@@ -65,6 +68,11 @@ export class FDFile {
     this.inputLink = json.inputLink;
     this.outputLink = json.outputLink;
     this.filename = json.filename;
+    this.frames = json.frames;
+    this.fps = json.fps;
+    this.width = json.width;
+    this.height = json.height;
+    this.points = json.points;
   }
 
 }

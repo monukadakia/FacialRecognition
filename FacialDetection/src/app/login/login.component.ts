@@ -14,8 +14,8 @@ export class LoginComponent implements OnInit {
   constructor(private authGuardService: AuthGuardService,
               private router: Router,
               private header: HeaderComponent,
-              private firebaseApp: FirebaseApp) { 
-      this.database = firebaseApp.database();
+              private firebaseApp: FirebaseApp) {
+    this.database = firebaseApp.database();
   }
 
   reset = false;
@@ -62,13 +62,13 @@ export class LoginComponent implements OnInit {
       return;
     }
     this.authGuardService.login(email, password).then(a => {
-      this.authGuardService.afDB.list("/users/" + a.uid).subscribe(a2 =>{
+      this.authGuardService.afDB.list("/users/" + a.uid).subscribe(a2 => {
         a2.forEach (b => {
-          let keys = Object.keys(b);
+          const keys = Object.keys(b);
           keys.forEach(key => {
             if (key === "info") {
               b[key].lastLoginOn = new Date().toLocaleString();
-              let self = this;
+              const self = this;
               $.getJSON("http://jsonip.com/?callback=?", function (data) {
                 b[key].ipAddress = data.ip;
                 self.database.ref('/users/' + a.uid + '/' + b.$key).update({info: b[key]});

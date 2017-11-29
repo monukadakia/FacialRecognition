@@ -36,7 +36,7 @@ export class SignupComponent implements OnInit {
     const email = $('#email').val().toString().trim();
     const password = $('#pwd').val().toString().trim();
     const confirmPwd = $('#confirmPwd').val().toString().trim();
-    if (email.length < 1){
+    if (email.length < 1) {
       $('#emptyEmail').show();
       return;
     }
@@ -60,7 +60,7 @@ export class SignupComponent implements OnInit {
       $('#invalidConfirmPwd').show();
       return;
     }
-    let self = this;
+    const self = this;
     $.getJSON("http://jsonip.com/?callback=?", function (data) {
       self.authGuardService.signup(email, password).then(a => {
         self.authGuardService.afDB.list('/users/' + a.uid).

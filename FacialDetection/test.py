@@ -10,7 +10,7 @@ detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(predictor_path)
 
 count = sys.argv[1]
-img = io.imread("/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/image-%s.png" %count)
+img = io.imread("/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/%s.png" %count)
 
 dets = detector(img)
 
@@ -27,4 +27,3 @@ for b in range(68):
 
 for x in vec:
 	print "%i %i" % (x[0], x[1])
-	

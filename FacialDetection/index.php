@@ -3,6 +3,11 @@
 
   $filePath = $_GET["fileInfo"];
   $userID = $_GET["userId"];
+  $videoID = $_GET["videoId"];
+
+  // Kirtan: "/usr/bin/python"
+  // Mohnish: "/Users/mohnishkadakia/Library/Enthought/Canopy_64bit/User/bin/python"
+  $currentPython = "/usr/bin/python";
 
   if (!file_exists('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/'.$userID)) {
     mkdir('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/'.$userID, 0777, true);
@@ -19,22 +24,23 @@
     mkdir('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/', 0777, true);
   }
 
-  $command = '/usr/local/bin/ffmpeg  -i '.$filePath.' -vf fps=30 /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/image-%d.png';
+  $command = '/usr/local/bin/ffmpeg  -i '.$filePath.' -vf fps=30 /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/'.$videoID.'.%d.png';
   shell_exec($command);
 
   $count = 1;
-  while(file_exists("/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/image-".$count.".png")){
-    $command = '/Users/mohnishkadakia/Library/Enthought/Canopy_64bit/User/bin/python /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/test.py '.$count;
+  $all_the_points = array();
+  while(file_exists('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/'.$videoID.'.'.$count.'.png')){
+    $command = $currentPython.' /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/test.py '.$videoID.'.'.$count;
     $points = shell_exec($command);
-    
-    $command = '/Users/mohnishkadakia/Library/Enthought/Canopy_64bit/User/bin/python /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/example_draw_delaunay_triangles.py '.$count.' "'.$points.'"';
+    array_push($all_the_points, $points);
+    $command = $currentPython.' /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/example_draw_delaunay_triangles.py '.$videoID.'.'.$count.' "'.$points.'"';
     shell_exec($command);
 
     $count = $count + 1;
   }
 
   $filePath = $_GET["fileInfo"];
-  $command = "/usr/local/bin/ffmpeg -r 30 -f image2 -s 1920x1080 -i /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/image-%d.png -vcodec libx264 -crf 25 /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/".$userID."/".$filePath;
+  $command = "/usr/local/bin/ffmpeg -r 30 -f image2 -s 1920x1080 -i /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/".$videoID.".%d.png -vcodec libx264 -crf 25 -pix_fmt yuv420p /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/".$userID."/".$filePath;
   shell_exec($command);
 
   $command = "rm /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/*.png";
@@ -56,5 +62,8 @@ echo $framePerSecond[0]. "\n";
 foreach ($resolution as $elem) {
   echo substr($elem, strpos($elem, '=')+1). "\n";
 }
-      
+foreach ($all_the_points as $points) {
+  echo "-----\n";
+  echo $points . "\n";
+}
   ?>

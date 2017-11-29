@@ -1,10 +1,10 @@
 #!/usr/bin/python
- 
+
 import cv2
 import numpy as np
 import random
 import sys
- 
+
 
 
 
@@ -19,19 +19,19 @@ def rect_contains(rect, point) :
     elif point[1] > rect[3] :
         return False
     return True
- 
+
 # Draw a point
 def draw_point(img, p, color ) :
     cv2.circle (img, p, 3, color, 0, cv2.LINE_AA, 0)
- 
- 
+
+
 # Draw delaunay triangles
 def draw_delaunay(img, subdiv, delaunay_color ) :
- 
+
     triangleList = subdiv.getTriangleList();
     size = img.shape
     r = (0, 0, size[1], size[0])
- 
+
     for t in triangleList :
         pt1 = (t[0], t[1])
         pt2 = (t[2], t[3])
@@ -40,30 +40,30 @@ def draw_delaunay(img, subdiv, delaunay_color ) :
             cv2.line(img, pt1, pt2, delaunay_color, 1, cv2.LINE_AA, 0)
             cv2.line(img, pt2, pt3, delaunay_color, 1, cv2.LINE_AA, 0)
             cv2.line(img, pt3, pt1, delaunay_color, 1, cv2.LINE_AA, 0)
- 
+
 if __name__ == '__main__':
- 
+
     # Define window names
     win_delaunay = "Delaunay Triangulation"
- 
+
     # Turn on animation while drawing triangles
     animate = True
-     
+
     # Define colors for drawing.
     delaunay_color = (255,0,0)
     points_color = (0, 0, 255)
- 
+
     # Read in the image.
     count = sys.argv[1]
-    img = cv2.imread("/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/image-%s.png" %count);
-     
+    img = cv2.imread("/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/%s.png" %count);
+
     # Keep a copy around
     img_orig = img.copy();
-     
+
     # Rectangle to be used with Subdiv2D
     size = img.shape
     rect = (0, 0, size[1], size[0])
-     
+
     # Create an instance of Subdiv2D
     subdiv = cv2.Subdiv2D(rect);
     points = [];
@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
 
     # Create an array of points.
-    
+
     # points.append((273, 112));
     # points.append((271, 125));
     # points.append((271, 137));
@@ -149,17 +149,17 @@ if __name__ == '__main__':
     # points.append((322, 157));
     # points.append((316, 157));
     # points.append((310, 156));
-   
- 
+
+
     # Insert points into subdiv
     for p in points :
         subdiv.insert(p)
-         
+
     # Draw delaunay triangles
     draw_delaunay (img, subdiv, (255, 0, 0));
- 
+
     # Draw points
     for p in points :
         draw_point(img, p, (0,0,255))
 
-    cv2.imwrite("/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/image-%s.png" %count, img);
+    cv2.imwrite("/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/%s.png" %count, img);
