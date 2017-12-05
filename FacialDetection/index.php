@@ -5,9 +5,8 @@
   $userID = $_GET["userId"];
   $videoID = $_GET["videoId"];
 
-  // Kirtan: "/usr/bin/python"
-  // Mohnish: "/Users/mohnishkadakia/Library/Enthought/Canopy_64bit/User/bin/python"
-  $currentPython = "/usr/bin/python";
+  $currentPython =  "/Users/mohnishkadakia/Library/Enthought/Canopy_64bit/User/bin/python";
+  //$currentPython = "/usr/bin/python";
 
   if (!file_exists('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/'.$userID)) {
     mkdir('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/'.$userID, 0777, true);
