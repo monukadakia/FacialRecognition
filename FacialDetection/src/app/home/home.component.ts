@@ -23,7 +23,7 @@ export class HomeComponent implements OnInit {
   private loading = false;
   private files: FDFile[];
   private facePoints = {};
-  private pupilPoiints = {};
+  private pupilPoints = {};
   private posePoints = {};
   private video_data = [];
   private final_data = {};
@@ -89,6 +89,7 @@ export class HomeComponent implements OnInit {
       userId: this.userId,
       videoId: hashed}})
       .subscribe(res => {
+        console.log(res.text());
         this.updateDatabase(file, res.text(), hashed);
       });
   }
@@ -102,12 +103,17 @@ export class HomeComponent implements OnInit {
       const fpoint = {};
       point.split("\n").forEach(individual => {
         if (individual.trim().length > 0) {
-          fpoint["Point " + i] = individual.replace(" ", ", ");
+          fpoint["Point " + i] = {
+            x: individual.split(" ")[0],
+            y: individual.split(" ")[1]
+          };
           i++;
         }
       });
-      this.facePoints[count] = fpoint;
-      count++;
+      if (fpoint["Point 1"]) {
+        this.facePoints[count] = fpoint;
+        count++;
+      }
     });
     this.frameCount = count;
   }
@@ -120,32 +126,56 @@ export class HomeComponent implements OnInit {
       const pupil_point = {};
       point.split("\n").forEach(pupil => {
         if (pupil.includes("Left:")) {
-          pupil = pupil.replace("Left:", "");
-          pupil_point["Left Point"] = pupil;
-        } else if (pupil.includes("Right:")) {
-          pupil = pupil.replace("Right:", "");
-          pupil_point["Right Point"] = pupil;
+          pupil = pupil.replace("Left: ", "").replace(", ", " ").trim();
+          pupil_point["Left Point"] = {
+            x: pupil.split(" ")[0].trim(),
+            y: pupil.split(" ")[1].trim()
+          };
+        } else if (pupil.includes("Right: ")) {
+          pupil = pupil.replace("Right:", "").replace(", ", " ").trim();
+          pupil_point["Right Point"] = {
+            x: pupil.split(" ")[0].trim(),
+            y: pupil.split(" ")[1].trim()
+          };
         }
       });
-      this.pupilPoiints[count] = pupil_point;
-      count++;
+      if (pupil_point["Left Point"]) {
+        this.pupilPoints[count] = pupil_point;
+        count++;
+      }
     });
   }
 
   getPosePoints(data) {
-
+    const points = data.split(".....")[3];
+    const pPoints = points.split("-----");
+    let count = 0;
+    pPoints.forEach(point => {
+      if (point.trim().length > 0) {
+        const indPoint = point.split(" ");
+        const pointData = {};
+        pointData["Yaw"] = indPoint[0].trim();
+        pointData["Pitch"] = indPoint[1].trim();
+        pointData["Roll"] = indPoint[2].trim();
+        this.posePoints[count] = pointData;
+        count++;
+      }
+    });
   }
 
   getVideoData(data) {
-    this.video_data = data.split(".....")[0];
+    this.video_data = data.split(".....")[0].trim().split("\n");
   }
 
   mergeData() {
     for (let i = 0; i < this.frameCount; i++) {
       const points = {};
       points["68 Points"] = this.facePoints[i];
-      if (this.pupilPoiints[i]) {
-        points["Pupil Points"] = this.pupilPoiints[i];
+      if (this.pupilPoints[i]) {
+        points["Pupil Points"] = this.pupilPoints[i];
+      }
+      if (this.posePoints[i]) {
+        points["Head Position"] = this.posePoints[i];
       }
       this.final_data["Frame " + (i + 1)] = points;
     }
@@ -166,10 +196,10 @@ export class HomeComponent implements OnInit {
       filename: file,
       inputLink: "http://localhost:8888/FacialRecognition/FacialDetection/video_in/" + file,
       outputLink: "http://localhost:8888/FacialRecognition/FacialDetection/video_out/" + this.userId + "/" + file,
-      frames: this.video_data[0],
-      fps: this.video_data[1],
-      width: this.video_data[2],
-      height: this.video_data[3],
+      frames: this.video_data[0].trim(),
+      fps: this.video_data[1].trim(),
+      width: this.video_data[2].trim(),
+      height: this.video_data[3].trim(),
       all_points: this.final_data
     };
     fdFile.deserialize(fileJson);
