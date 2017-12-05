@@ -22,7 +22,12 @@ export class HomeComponent implements OnInit {
   private done = false;
   private loading = false;
   private files: FDFile[];
-
+  private facePoints = {};
+  private pupilPoiints = {};
+  private posePoints = {};
+  private video_data = [];
+  private final_data = {};
+  private frameCount = 0;
 
 
   constructor(private authGuardService: AuthGuardService,
@@ -84,34 +89,74 @@ export class HomeComponent implements OnInit {
       userId: this.userId,
       videoId: hashed}})
       .subscribe(res => {
-        console.log(res.text());
         this.updateDatabase(file, res.text(), hashed);
       });
   }
 
-  updateDatabase(file, data, hashed) {
-    const metadata = data.split("-----");   // all the output
-    const video_data = metadata[0].split("\n");   // video_data
-    const points_json = {};   // all the json
-    let count = 1;
-    metadata.forEach(x => {
-      const currentData = x.split("\n");
-      if (currentData.length >= 68) {
-        const point = {};
-        let i = 1;
-        currentData.forEach(y => {
-          if (y.trim().length > 0) {
-            point["point " + i] = {
-              x: y.split(" ")[0],
-              y: y.split(" ")[1]
-            };
-            i++;
-          }
-        });
-        points_json["frame " + count] = point;
-        count++;
-      }
+  get68Points(data) {
+    const points = data.split(".....")[2];
+    const pPoints = points.split("-----");
+    let count = 0;
+    pPoints.forEach(point => {
+      let i = 1;
+      const fpoint = {};
+      point.split("\n").forEach(individual => {
+        if (individual.trim().length > 0) {
+          fpoint["Point " + i] = individual.replace(" ", ", ");
+          i++;
+        }
+      });
+      this.facePoints[count] = fpoint;
+      count++;
     });
+    this.frameCount = count;
+  }
+
+  getPupilPoints(data) {
+    const points = data.split(".....")[1];
+    const pPoints = points.split("-----");
+    let count = 0;
+    pPoints.forEach(point => {
+      const pupil_point = {};
+      point.split("\n").forEach(pupil => {
+        if (pupil.includes("Left:")) {
+          pupil = pupil.replace("Left:", "");
+          pupil_point["Left Point"] = pupil;
+        } else if (pupil.includes("Right:")) {
+          pupil = pupil.replace("Right:", "");
+          pupil_point["Right Point"] = pupil;
+        }
+      });
+      this.pupilPoiints[count] = pupil_point;
+      count++;
+    });
+  }
+
+  getPosePoints(data) {
+
+  }
+
+  getVideoData(data) {
+    this.video_data = data.split(".....")[0];
+  }
+
+  mergeData() {
+    for (let i = 0; i < this.frameCount; i++) {
+      const points = {};
+      points["68 Points"] = this.facePoints[i];
+      if (this.pupilPoiints[i]) {
+        points["Pupil Points"] = this.pupilPoiints[i];
+      }
+      this.final_data["Frame " + (i + 1)] = points;
+    }
+  }
+
+  updateDatabase(file, data, hashed) {
+    this.getVideoData(data);
+    this.getPupilPoints(data);
+    this.get68Points(data);
+    this.getPosePoints(data);
+    this.mergeData();
     const fdFile = new FDFile();
 
     const dbHelper = this.database.ref("/users/" + this.userId + "/files/" + hashed);
@@ -121,13 +166,13 @@ export class HomeComponent implements OnInit {
       filename: file,
       inputLink: "http://localhost:8888/FacialRecognition/FacialDetection/video_in/" + file,
       outputLink: "http://localhost:8888/FacialRecognition/FacialDetection/video_out/" + this.userId + "/" + file,
-      frames: video_data[0],
-      fps: video_data[1],
-      width: video_data[2],
-      height: video_data[3],
-      points: points_json
+      frames: this.video_data[0],
+      fps: this.video_data[1],
+      width: this.video_data[2],
+      height: this.video_data[3],
+      all_points: this.final_data
     };
-    fdFile.deserialize(fileJson);
+    fdFile.deserialize(fileJson);
     dbHelper.push(fileJson).then( a => {
       this.loading = false;
       document.querySelector("video").src = fdFile.outputLink;
@@ -140,7 +185,7 @@ export class HomeComponent implements OnInit {
       $(this).removeClass("selected");
     });
     $(".file").each(function() {
-      if ($(this).html().includes(file.name)) {
+      if ($(this).html().includes(file.id)) {
         $(this).addClass("selected");
       }
     });

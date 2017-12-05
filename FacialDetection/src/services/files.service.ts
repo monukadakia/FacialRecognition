@@ -57,7 +57,7 @@ export class FDFile {
   public fps;
   public width;
   public height;
-  public points;
+  public all_points;
 
   constructor() {
   }
@@ -72,7 +72,7 @@ export class FDFile {
     this.fps = json.fps;
     this.width = json.width;
     this.height = json.height;
-    this.points = json.points;
+    this.all_points = json.all_points;
   }
 
 }

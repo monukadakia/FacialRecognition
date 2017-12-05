@@ -5,8 +5,8 @@
   $userID = $_GET["userId"];
   $videoID = $_GET["videoId"];
 
-  $currentPython =  "/Users/mohnishkadakia/Library/Enthought/Canopy_64bit/User/bin/python";
-  //$currentPython = "/usr/bin/python";
+  //$currentPython =  "/Users/mohnishkadakia/Library/Enthought/Canopy_64bit/User/bin/python";
+  $currentPython = "/usr/bin/python";
 
   if (!file_exists('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/'.$userID)) {
     mkdir('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/video_out/'.$userID, 0777, true);
@@ -28,10 +28,14 @@
 
   $count = 1;
   $all_the_points = array();
+  $pupilPoints = array();
   while(file_exists('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/'.$videoID.'.'.$count.'.png')){
     $command = $currentPython.' /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/test.py '.$videoID.'.'.$count;
     $points = shell_exec($command);
     array_push($all_the_points, $points);
+    $command = './eyeLike-master/build/bin/eyeLike transcoded/'.$videoID.'.'.$count.'.png';
+    $pupilPoint = shell_exec($command);
+    array_push($pupilPoints, $pupilPoint);
     $command = $currentPython.' /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/example_draw_delaunay_triangles.py '.$videoID.'.'.$count.' "'.$points.'"';
     shell_exec($command);
 
@@ -61,8 +65,15 @@ echo $framePerSecond[0]. "\n";
 foreach ($resolution as $elem) {
   echo substr($elem, strpos($elem, '=')+1). "\n";
 }
+echo ".....\n";
+foreach ($pupilPoints as $point) {
+  echo "-----\n";
+  echo $point;
+}
+echo ".....\n";
 foreach ($all_the_points as $points) {
   echo "-----\n";
   echo $points . "\n";
 }
+
   ?>
