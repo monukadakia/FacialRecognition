@@ -72,8 +72,8 @@ if __name__ == '__main__':
     for x in format_points:
         if(len(x) != 0):
             point = x.split(" ")
-            point_x = int(point[0])
-            point_y = int(point[1])
+            point_x = int(float(point[0])/1)
+            point_y = int(float(point[1])/1)
             points.append((point_x, point_y));
 
 

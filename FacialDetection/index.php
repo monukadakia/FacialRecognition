@@ -31,22 +31,26 @@
   $pupilPoints = array();
   $posePoints = array();
   while(file_exists('/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/transcoded/'.$videoID.'.'.$count.'.png')){
-    $command = $currentPython.' /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/test.py '.$videoID.'.'.$count;
-    $points = shell_exec($command);
-    array_push($all_the_points, trim($points));
+    //$command = $currentPython.' /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/test.py '.$videoID.'.'.$count;
+    //$points = shell_exec($command);
     $command = './eyeLike-master/build/bin/eyeLike transcoded/'.$videoID.'.'.$count.'.png';
     $pupilPoint = shell_exec($command);
     array_push($pupilPoints, trim($pupilPoint));
-    $command = 'OpenFace-master/bin/FaceLandmarkImg -f transcoded/'.$videoID.'.'.$count.'.png -op resource/test.txt';
+    $command = './OpenFace-master/bin/FaceLandmarkImg -f transcoded/'.$videoID.'.'.$count.'.png -of resource/test.txt';
     $posePoint = shell_exec($command);
 
     $homepage = file_get_contents("/Applications/MAMP/htdocs/FacialRecognition/FacialDetection/resource/test_det_0.txt");
     $final = explode(":", $homepage);
+    $final_two = $final[2];
     $final_one = $final[4];
-    $final_one = str_replace("gaze_vec", "", $final_one);
+    $final_two = explode("{", $final_two);
+    $final_two = str_replace("pose", "", $final_two);
+    $final_one = str_replace("au intensities", "", $final_one);
     $brackets = array("{","}");
+    $final_two = str_replace($brackets, "", $final_two);
     $final_one = str_replace($brackets, "", $final_one);
-
+    $points = trim($final_two[1]);
+    array_push($all_the_points, trim($points));
     array_push($posePoints, trim($final_one));
     $command = $currentPython.' /Applications/MAMP/htdocs/FacialRecognition/FacialDetection/example_draw_delaunay_triangles.py '.$videoID.'.'.$count.' "'.$points.'"';
     shell_exec($command);

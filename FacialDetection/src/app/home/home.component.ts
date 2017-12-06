@@ -89,7 +89,6 @@ export class HomeComponent implements OnInit {
       userId: this.userId,
       videoId: hashed}})
       .subscribe(res => {
-        console.log(res.text());
         this.updateDatabase(file, res.text(), hashed);
       });
   }
